@@ -1,8 +1,10 @@
 from entidades import *
 import board
-import time
 import RPi.GPIO as GPIO
 import sys
+import time
+
+SETPOINT_TEMPERATURA = 20
 
 PIN_CRUCE_CERO_FOCO = 17
 PIN_PWM_FOCO = 27
@@ -25,37 +27,18 @@ ventilador2 = Ventilador(PIN_VENTILADOR2, FRECUENCIA_VENTILADOR)
 sensor_humedad = SensorHumedad(PIN_SENSOR_HUMEDAD)
 sensor_temperatura1 = SensorTemperatura(ID_SENSOR_TEMPERATURA1)
 sensor_temperatura2 = SensorTemperatura(ID_SENSOR_TEMPERATURA2)
-menu = "Selecciona una opción:\n  1-Prender y apagar foco\n  2-Irrigacion\n  3-Sensor temperatura\n  4-Sensor humedad\n  5-Ventilador\n  0-Salir\n\n>>"
 
-while True:
-    entrada = int(input(menu))
-    if entrada == 1:
-        intensidad = input("Seleccione la intensidad del foco [0-100]:")
-        if intensidad == 0:
-            foco.apagar()
-        else:
-            foco.prender()
-            foco.cambiarIntensidad(intensidad)
-    
-    elif entrada == 2:
-        electrovalvula.prender()
-        time.sleep(2)
-        electrovalvula.apagar()
+controlador_pid = ControladorPID(kp=2.0, ki=0.5, kd=0.1, setpoint=SETPOINT_TEMPERATURA)
 
-    elif entrada == 3:
-        print(f"{sensor_temperatura1.obtenerTemperatura()}C")
-        print(f"{sensor_temperatura2.obtenerTemperatura()}C")
-    
-    elif entrada == 4:
-        print(f"{sensor_humedad.obtenerHumedad()} de humedad")
-    
-    elif entrada == 5:
-        velocidad1 = input("Seleccione la velocidad del ventilador 1 [0-100]:")
-        ventilador1.cambiarVelocidad(velocidad1)
+control_invernadero = ControlInvernadero(
+    foco, 
+    ventilador1, 
+    ventilador2, 
+    electrovalvula, 
+    sensor_temperatura1,
+    sensor_temperatura2,
+    sensor_humedad,
+    controlador_pid
+)
 
-        velocidad2 = input("Seleccione la velocidad del ventilador 1 [0-100]:")
-        ventilador2.cambiarVelocidad(velocidad2)
-
-    elif entrada == 0:
-        GPIO.cleanup()
-        sys.exit(0)
+control_invernadero.run() 
