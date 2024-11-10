@@ -11,8 +11,8 @@ if [ ! -d "$ENV_DIR" ]; then
   python3 -m venv "$ENV_DIR"
   echo "Activando el entorno virtual e instalando dependencias..."
   source "$ENV_DIR/bin/activate"
-  pip3 install adafruit-circuitpython-dht Adafruit-Blinka
-  python3 -m pip install pigpio
+  bash dependencias.sh
+  bash w1.sh
 else
   echo "Entorno virtual encontrado en $ENV_DIR."
   # Activa el entorno virtual
