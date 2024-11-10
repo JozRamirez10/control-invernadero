@@ -3,7 +3,7 @@
 # Nombre del entorno virtual
 ENV_DIR="env"
 # Nombre del programa Python que quieres ejecutar
-PROGRAM="modulos/control.py"
+PROGRAM="control.py"
 
 # Verifica si el entorno virtual ya existe
 if [ ! -d "$ENV_DIR" ]; then
@@ -12,6 +12,7 @@ if [ ! -d "$ENV_DIR" ]; then
   echo "Activando el entorno virtual e instalando dependencias..."
   source "$ENV_DIR/bin/activate"
   pip3 install adafruit-circuitpython-dht Adafruit-Blinka
+  python3 -m pip install pigpio
 else
   echo "Entorno virtual encontrado en $ENV_DIR."
   # Activa el entorno virtual
