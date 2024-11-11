@@ -1,19 +1,19 @@
 #!/bin/bash
 
-ARCHIVO_DHCPD="/etc/dhcpd.conf"
+ARCHIVO_DHCPD="/etc/dhcpcd.conf"
 ARCHIVO_DNSMASQ="/etc/dnsmasq.conf"
 ARCHIVO_HOSTAPD="/etc/hostapd/hostapd.conf"
 ARCHIVO_DAMEON_HOSTAPD="/etc/default/hostapd"
 
 CONFIG_DHCPD="
 interface wlan0
-    static ip_address=192.168.1.254/24
+    static ip_address=192.168.1.1/24
     nohook wpa_supplicant
 "
 
 CONFIG_DNSMASQ="
 interface=wlan0
-dhcp-range=192.168.1.2,192.168.1.150,255.255.255.0,24h
+dhcp-range=192.168.1.2,192.168.1.200,255.255.255.0,24h
 "
 
 CONFIG_HOSTAPD="
@@ -37,6 +37,10 @@ rsn_pairwise=CCMP
 
 DAEMON_HOSTAPD='DAEMON_CONF="/etc/hostapd/hostapd.conf"'
 
+rfkill unblock wlan
+ip link set wlan0 up
+ifconfig wlan0 up
+
 systemctl stop dnsmasq
 systemctl stop hostapd
 
@@ -49,7 +53,7 @@ else
     echo "Configuración agregada exitosamente a $CONFIG_DHCPD."
 fi
 
-#service dhcpd restart 
+service dhcpcd restart 
 
 # Verificamos si ya existe alguna de las líneas para evitar duplicados
 if grep -q "interface=wlan0" "$ARCHIVO_DNSMASQ" && grep -q "dhcp-range=192.168.1.2,192.168.1.150,255.255.255.0,24h" "$ARCHIVO_DNSMASQ"; then

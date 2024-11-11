@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Ruta al archivo config.txt
-archivo_configuracion="/boot/firmware/config.txt"
+archivo_configuracion="/boot/config.txt"
 # Línea a buscar o agregar
 linea_w1="dtoverlay=w1-gpio"
 
@@ -12,8 +12,4 @@ else
     echo "La línea '$linea_w1' no se encontró. Agregando al final del archivo..."
     # Agregar la línea al final del archivo config.txt
     echo "$linea_w1" | sudo tee -a "$archivo_configuracion" > /dev/null
-    tail -n 5 $archivo_configuracion
-    # Reiniciar el sistema
-    echo "Reiniciando el sistema..."
-    sudo reboot
 fi

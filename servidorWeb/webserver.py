@@ -14,25 +14,18 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import sys
 import json
 import mimetypes
 from urllib.parse import urlparse  # Importar urlparse para manejar la URL
-from exp6 import init_exp6, direction, velocity, grades
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 # Nombre o dirección IP del sistema anfitrión del servidor web
-# address = "localhost"
-# address = "127.0.0.1"
-address = "192.168.0.203"
+address = "192.168.1.1"
 # Puerto en el cual el servidor estará atendiendo solicitudes HTTP
 # El default de un servidor web en produción debe ser 80
 port = 8080
 
-
 class WebServer(BaseHTTPRequestHandler):
-    """Sirve cualquier archivo encontrado en el servidor"""
-
     def _serve_file(self, rel_path):
         # Ignorar parámetros en la URL
         parsed_path = urlparse(rel_path)
@@ -58,11 +51,10 @@ class WebServer(BaseHTTPRequestHandler):
         except Exception as e:
             print(f"Error al servir el archivo {file_path}: {e}")
 
-    """Sirve el archivo de interfaz de usuario"""
     def _serve_ui_file(self):
-        ui_path = "user_interface.html"
+        ui_path = os.path.join(os.path.dirname(__file__), "index.html")
         if not os.path.isfile(ui_path):
-            err = "user_interface.html no encontrado."
+            err = "index.html no encontrado."
             self.send_response(404)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
@@ -170,13 +162,12 @@ class WebServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode("utf-8"))
 
 
-def main():
+def iniciarServidorWeb():
     webServer = HTTPServer((address, port), WebServer)
     print("Servidor iniciado")
     print(f"\tAtendiendo solicitudes en http://{address}:{port}")
 
     try:
-        init_exp6()
         # Mantiene al servidor web ejecutándose en segundo plano
         webServer.serve_forever()
     except KeyboardInterrupt:
@@ -190,7 +181,3 @@ def main():
         # Reporta parada del servidor web en consola
         print("Servidor detenido.")
 
-
-# Punto de anclaje de la función main
-if __name__ == "__main__":
-    main()

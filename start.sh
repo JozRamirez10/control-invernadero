@@ -1,29 +1,28 @@
 #!/bin/bash
 
-# Nombre del entorno virtual
-ENV_DIR="env"
+# Archivo de bandera para verificar si ya se ejecutaron los scripts de configuración
+FLAG_FILE="config_done.flag"
+
 # Nombre del programa Python que quieres ejecutar
 PROGRAM="control.py"
 
-# Verifica si el entorno virtual ya existe
-if [ ! -d "$ENV_DIR" ]; then
-  echo "Creando entorno virtual en $ENV_DIR..."
-  python3 -m venv "$ENV_DIR"
-  echo "Activando el entorno virtual e instalando dependencias..."
-  source "$ENV_DIR/bin/activate"
-  bash ./scripts/dependencias.sh
-  bash ./scripts/w1.sh
-  bash ./scripts/web.sh
+# Verifica si el archivo de bandera existe
+if [ ! -f "$FLAG_FILE" ]; then
+  echo "Ejecutando dependencias.sh, w1.sh y web.sh por primera vez..."
+  sudo bash ./scripts/dependencias.sh
+  sudo bash ./scripts/w1.sh
+  sudo bash ./scripts/web.sh
+  # Crea el archivo de bandera
+  touch "$FLAG_FILE"
+  echo "Configuración completada. Archivo de bandera creado."
+
+  sudo reboot now
 else
-  echo "Entorno virtual encontrado en $ENV_DIR."
-  # Activa el entorno virtual
-  source "$ENV_DIR/bin/activate"
+  echo "Los scripts de configuración ya se ejecutaron previamente. Omitiendo."
 fi
 
-# Ejecuta el programa
-echo "Ejecutando $PROGRAM..."
-python3 "$PROGRAM"
+# Ejecuta el programa principal con permisos de superusuario
+echo "Ejecutando $PROGRAM con permisos de superusuario..."
+sudo python3 "$PROGRAM"
 
-# Desactiva el entorno virtual
-deactivate
 echo "Ejecución completada."

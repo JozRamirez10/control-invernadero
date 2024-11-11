@@ -1,5 +1,6 @@
 from entidades import *
 from config import *
+from servidorWeb.webserver import iniciarServidorWeb
 
 import RPi.GPIO as GPIO
 
@@ -24,4 +25,5 @@ control_invernadero = ControlInvernadero(
     controlador_pid
 )
 
-control_invernadero.run() 
+#control_invernadero.run()
+iniciarServidorWeb() 
