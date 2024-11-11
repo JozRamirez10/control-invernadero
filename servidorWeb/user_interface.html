@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de LCD</title>
+    <link href="./src/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+  </head>
+  
+  <body>
+    <div class="container-fluid text-center">
+      <div class="my-4">
+        <h1>Control de LCD</h1>
+        <h2>Practica 8 - FSE </h2>
+        <hr>
+      </div>
+
+      <div class="my-4">
+        <div class="col-12">
+          <div class="my-3">
+            <h3>Desplazamiento de marquesina</h3>
+          </div>
+          <button class="btn btn-primary col-4 py-4" type="button" onclick="handle(this, 'direction', 'left')">Izquierda</button>
+          <button class="btn btn-primary col-4 py-4" type="button" onclick="handle(this, 'direction', 'right')">Derecha</button>
+        </div>
+      </div>
+
+      <div class="my-4">
+        <div class="col-12">
+          <div class="my-3">
+            <h3>Control de velocidad</h3>
+          </div>
+          <div class=" d-flex justify-content-center align-items-center">
+            <div class="col-8">
+              <input type="range" class="form-range" min="0.1" max="1.9" step="0.1" id="velocidad">
+            </div>
+          </div>
+        </div>
+        <hr>
+      </div>
+
+      <div class="my-4">
+        <div class="col-12">
+          <div class="my-3">
+            <h3>Temperatura</h3>
+          </div>
+          <div class="my-3">
+            <button class="btn btn-primary col-4 py-4" type="button" onclick="handle(this, 'grades', 'celsius')">Celsius</button>
+            <button class="btn btn-primary col-4 py-4" type="button" onclick="handle(this, 'grades', 'farenheit')">Farenheit</button>  
+          </div>
+          <button class="btn btn-primary col-8 py-4" type="button" onclick="handle(this, 'grades', 'both')">Ambos</button>
+        </div>
+      </div>
+
+      <div id="grafica">
+        <img id="tempImg" src="temperatura_grafica.png" alt="grafica de temperatura">
+      </div>
+      
+    </div>
+    <script src="./src/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="./src/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
+<script>
+  setInterval(function() {
+      // Obtener el elemento de la imagen
+      var img = document.getElementById("tempImg");
+      
+      // Generar una nueva URL con un parámetro de tiempo para evitar la caché
+      img.src = "temperatura_grafica.png?" + new Date().getTime();
+  }, 1000); // 1000 milisegundos = 1 segundo
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const rangeInput = document.getElementById('velocidad');
+    rangeInput.addEventListener('input', function() {
+        const valorActual = rangeInput.value;
+        const velocidad = 2 - valorActual;
+        handle(this, 'velocity', velocidad)
+    });
+  });
+
+  function handle(sender, action, value){
+    submit(action, value);
+  }
+
+  function submit(action, value){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", window.location.href, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+      'action' : action,
+      'value' :  value,
+    }));
+  }
+</script>
+
+

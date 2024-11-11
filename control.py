@@ -1,8 +1,6 @@
 from entidades import *
 import board
 import RPi.GPIO as GPIO
-import sys
-import time
 
 SETPOINT_TEMPERATURA = 20
 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de LCD</title>
+    <link href="./src/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+  </head>
+  
+  <body>
+    <div class="container-fluid text-center">
+      <div class="my-4">
+        
+        <h2>Proyecto final FSE</h2>
+        <hr>
+      </div>
+
+      <!-- Control del sistema de irrigación -->
+      <div class="my-4">
+        <div class="col-12">
+          <h3>Control de Invernadero</h3>
+          <button class="btn btn-success col-4 py-4" type="button" onclick="handle(this, 'irrigation', 'on')">Encender Irrigación</button>
+          <button class="btn btn-danger col-4 py-4" type="button" onclick="handle(this, 'irrigation', 'off')">Apagar Irrigación</button>
+        </div>
+      </div>
+
+      <!-- Gráfica de histórico de temperatura, irrigación y acciones -->
+      <div class="my-4">
+        <h3>Histórico de Temperatura e Irrigación</h3>
+        <button class="btn btn-info col-4 py-4" type="button" onclick="handle(this, 'graph', 'show')">Desplegar Gráfica</button>
+        <div id="grafica" class="my-3">
+          <img id="tempImg" src="temperatura_grafica.png" alt="Gráfica de temperatura" style="max-width: 100%;">
+        </div>
+      </div>
+
+      <!-- Control de temperatura PID -->
+      <div class="my-4">
+        <h3>Control de Temperatura del Invernadero</h3>
+        <button class="btn btn-warning col-4 py-4" type="button" onclick="handle(this, 'temperatureControl', 'pid')">Control PID</button>
+      </div>
+
+      <!-- Control de potencia del radiador -->
+      <div class="my-4">
+        <h3>Control de Potencia del Radiador</h3>
+        <input type="range" class="form-range col-8" min="0" max="100" step="1" id="radiadorPotencia">
+      </div>
+
+      <!-- Control de potencia del ventilador -->
+      <div class="my-4">
+        <h3>Control de Potencia del Ventilador</h3>
+        <input type="range" class="form-range col-8" min="0" max="100" step="1" id="ventiladorPotencia">
+      </div>
+
+      <script src="./src/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="./src/bootstrap/js/bootstrap.min.js"></script>
+    </div>
+  </body>
+</html>
+
+<script>
+  // Actualizar imagen de gráfica periódicamente
+  setInterval(function() {
+    var img = document.getElementById("tempImg");
+    img.src = "temperatura_grafica.png?" + new Date().getTime();
+  }, 1000);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const rangeRadiador = document.getElementById('radiadorPotencia');
+    const rangeVentilador = document.getElementById('ventiladorPotencia');
+
+    // Control de potencia del radiador
+    rangeRadiador.addEventListener('input', function() {
+      const potencia = rangeRadiador.value;
+      handle(this, 'radiatorPower', potencia);
+    });
+
+    // Control de potencia del ventilador
+    rangeVentilador.addEventListener('input', function() {
+      const potencia = rangeVentilador.value;
+      handle(this, 'fanPower', potencia);
+    });
+  });
+
+  function handle(sender, action, value) {
+    submit(action, value);
+  }
+
+  function submit(action, value) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", window.location.href, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+      'action': action,
+      'value': value,
+    }));
+  }
+</script>
