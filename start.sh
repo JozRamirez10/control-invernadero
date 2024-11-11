@@ -11,8 +11,9 @@ if [ ! -d "$ENV_DIR" ]; then
   python3 -m venv "$ENV_DIR"
   echo "Activando el entorno virtual e instalando dependencias..."
   source "$ENV_DIR/bin/activate"
-  bash dependencias.sh
-  bash w1.sh
+  bash ./scripts/dependencias.sh
+  bash ./scripts/w1.sh
+  bash ./scripts/web.sh
 else
   echo "Entorno virtual encontrado en $ENV_DIR."
   # Activa el entorno virtual
