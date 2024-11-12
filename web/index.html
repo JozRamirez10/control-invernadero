@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control De Invernadero</title>
+    <link href="./web/src/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+  </head>
+  
+  <body>
+    <div class="container-fluid text-center">
+      <div class="my-4">
+        <h2>Control de invernadero</h2>
+        <hr>
+      </div>
+
+      <!-- Control del sistema -->
+      <div class="my-4">
+        <div class="col-12">
+          <h3>Control del sistema</h3>
+          <div>
+            <label id="estado">Estado: </label>
+          </div>
+          <button class="btn btn-success col-4 py-4" type="button" onclick="handle(this, 'modificarSistema', true)">Encender</button>
+          <button class="btn btn-danger col-4 py-4" type="button" onclick="handle(this, 'modificarSistema', false)">Apagar</button>
+        </div>
+      </div>
+      
+      <!-- Control del sistema de irrigación -->
+      <div class="my-4">
+        <div class="col-12">
+          <h3>Control de irrigación</h3>
+          <div>
+            <label id="estado-irrigacion">Estado: </label>
+          </div>
+          <button class="btn btn-success col-4 py-4" type="button" onclick="handle(this, 'modificarIrrigacion', true)">Encender Irrigación</button>
+          <button class="btn btn-danger col-4 py-4" type="button" onclick="handle(this, 'modificarIrrigacion', false)">Apagar Irrigación</button>
+        </div>
+      </div>
+
+      <!-- Gráfica de histórico de temperatura, irrigación y acciones -->
+      <div class="my-4">
+        <h3>Histórico de Temperatura e Irrigación</h3>
+        <div>
+          <label id="temperatura">Temperatura: </label>
+        </div>
+        <div>
+          <label id="humedad">Humedad: </label>
+        </div>
+        <div id="grafica" class="my-3">
+          <img id="tempImg" src="./img/temperatura_grafica.png" alt="Gráfica de temperatura" style="max-width: 100%;">
+        </div>
+      </div>
+
+      <script src="./web/src/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="./web/src/bootstrap/js/bootstrap.min.js"></script>
+    </div>
+  </body>
+</html>
+
+<script>
+  // Actualizar imagen de gráfica periódicamente
+   setInterval(function() {
+    var img = document.getElementById("tempImg");
+    img.src = "./img/temperatura_grafica.png?" + new Date().getTime();
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_temperatura", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var data = JSON.parse(xhr.responseText);
+        // Actualizar la temperatura en el HTML
+        document.getElementById("temperatura").innerText = "Temperatura: " + data.temperatura + "°C";
+      }
+    };
+    xhr.send();
+
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open("GET", "/get_humedad", true);
+    xhr2.onreadystatechange = function() {
+      if (xhr2.readyState === 4 && xhr2.status === 200) {
+        var data = JSON.parse(xhr2.responseText);
+        // Actualizar la temperatura en el HTML
+        document.getElementById("humedad").innerText = "Humedad: " + data.humedad;
+      }
+    };
+    xhr2.send();
+
+    var xhr3 = new XMLHttpRequest();
+    xhr3.open("GET", "/get_estado", true);
+    xhr3.onreadystatechange = function() {
+      if (xhr3.readyState === 4 && xhr3.status === 200) {
+        var data = JSON.parse(xhr3.responseText);
+        // Actualizar la temperatura en el HTML
+        document.getElementById("estado").innerText = "Estado: " + data.estado;
+      }
+    };
+    xhr3.send();
+
+    var xhr4 = new XMLHttpRequest();
+    xhr4.open("GET", "/get_estado_irrigacion", true);
+    xhr4.onreadystatechange = function() {
+      if (xhr4.readyState === 4 && xhr4.status === 200) {
+        var data = JSON.parse(xhr4.responseText);
+        // Actualizar la temperatura en el HTML
+        document.getElementById("estado-irrigacion").innerText = "Estado: " + data.estado;
+      }
+    };
+    xhr4.send();
+
+  }, 1000);
+
+  function handle(sender, action, value) {
+    submit(action, value);
+  }
+
+  function submit(action, value) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", window.location.href, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+      'action': action,
+      'value': value,
+    }));
+  }
+</script>

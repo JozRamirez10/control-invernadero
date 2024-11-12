@@ -14,10 +14,13 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
 import json
 import mimetypes
 from urllib.parse import urlparse  # Importar urlparse para manejar la URL
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+from control import *
 
 # Nombre o dirección IP del sistema anfitrión del servidor web
 address = "192.168.1.1"
@@ -25,7 +28,7 @@ address = "192.168.1.1"
 # El default de un servidor web en produción debe ser 80
 port = 8080
 
-class WebServer(BaseHTTPRequestHandler):
+class WebServer(BaseHTTPRequestHandler):    
     def _serve_file(self, rel_path):
         # Ignorar parámetros en la URL
         parsed_path = urlparse(rel_path)
@@ -52,7 +55,7 @@ class WebServer(BaseHTTPRequestHandler):
             print(f"Error al servir el archivo {file_path}: {e}")
 
     def _serve_ui_file(self):
-        ui_path = os.path.join(os.path.dirname(__file__), "index.html")
+        ui_path = "web/index.html"
         if not os.path.isfile(ui_path):
             err = "index.html no encontrado."
             self.send_response(404)
@@ -78,13 +81,13 @@ class WebServer(BaseHTTPRequestHandler):
             self.wfile.write(bytes(content, "utf-8"))
 
     def _parse_post(self, json_obj):
-        if 'action' not in json_obj or 'value' not in json_obj:
+        if 'action' not in json_obj:
             return
         switcher = {
-            'direction': direction,
-            'velocity' : velocity,
-            'grades'   : grades
+            'modificarSistema': modificar_sistema,
+            'modificarIrrigacion' : modificar_irrigacion,
         }
+        print(json_obj)
         func = switcher.get(json_obj['action'], None)
         if func:
             print(f'\tLlamando {func.__name__}({json_obj["value"]})')
@@ -108,6 +111,42 @@ class WebServer(BaseHTTPRequestHandler):
             # Por simplicidad, se devuelve como respuesta el contenido del
             # archivo html con el código de la página de interfaz de usuario
             self._serve_ui_file()
+        if self.path == '/get_temperatura':
+            data = {
+                "temperatura": obtenerTemperatura()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        if self.path == '/get_humedad':
+            data = {
+                "humedad": obtenerHumedad()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        if self.path == '/get_estado':
+            data = {
+                "estado": estadoSistema()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        if self.path == '/get_estado_irrigacion':
+            data = {
+                "estado": estadoIrrigacion()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
         else:
             self._serve_file(self.path[1:])
 
@@ -161,7 +200,6 @@ class WebServer(BaseHTTPRequestHandler):
             response = {"error": "Error interno del servidor."}
             self.wfile.write(json.dumps(response).encode("utf-8"))
 
-
 def iniciarServidorWeb():
     webServer = HTTPServer((address, port), WebServer)
     print("Servidor iniciado")
@@ -180,4 +218,48 @@ def iniciarServidorWeb():
         webServer.server_close()
         # Reporta parada del servidor web en consola
         print("Servidor detenido.")
+
+def obtenerTemperatura():
+    global control
+    try:
+        temperatura = (control.sensor_temperatura1.obtenerTemperatura() + control.sensor_temperatura2.obtenerTemperatura()) / 2
+    except Exception:
+        return "Error"
+    return temperatura
+
+def obtenerHumedad():
+    global control
+    return control.sensor_humedad.obtenerHumedad()
+
+def estadoSistema():
+    global control
+    if control.prendido:
+        return "Encendido"
+    else:
+        return "Apagado"
+
+def estadoIrrigacion():
+    global control
+    if control.electrovalvula.estado:
+        return "Encendido"
+    else:
+        return "Apagado"
+
+def modificar_sistema(accion):
+    global control
+    modificarSistema(control, accion)
+
+def modificar_irrigacion(accion):
+    global control
+    modificarIrrigacion(control, accion)
+
+control = iniciarControl()
+hilo_control = threading.Thread(target=ejecutarControl, args=(control,))
+hilo_servidor = threading.Thread(target=iniciarServidorWeb)
+
+hilo_control.start()
+hilo_servidor.start()
+
+
+
 

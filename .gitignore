@@ -1,15 +1,14 @@
-env
-/env
-/env/*
-
-modulos
-modulos/*
-/modulos
-/modulos/*
-
 __pycache__
 __pycache__/*
 ./__pycache__
 ./__pycache__/*
 
+./entidades/__pycache__
+./entidades/__pycache__/*
+
+./web/__pycache__
+./web/__pycache__/*
+
 config_done.flag
+
+img/*

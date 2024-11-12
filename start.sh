@@ -4,7 +4,7 @@
 FLAG_FILE="config_done.flag"
 
 # Nombre del programa Python que quieres ejecutar
-PROGRAM="control.py"
+PROGRAM="webserver.py"
 
 # Verifica si el archivo de bandera existe
 if [ ! -f "$FLAG_FILE" ]; then
@@ -24,5 +24,7 @@ fi
 # Ejecuta el programa principal con permisos de superusuario
 echo "Ejecutando $PROGRAM con permisos de superusuario..."
 sudo python3 "$PROGRAM"
+
+sudo python3 fin.py
 
 echo "Ejecución completada."
