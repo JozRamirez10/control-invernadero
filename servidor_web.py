@@ -1,20 +1,18 @@
-#!/usr/bin/env python3
-# ## ###############################################
+# ## ###########################################################
 #
-# webserver.py
-# Starts a custom webserver and handles all requests
+# servidor_web.py
+# Levanta el servidor web e inicia el control del invernadero
 #
-# Autor: Mauricio Matamoros
+# Autor: José Ramírez
 # License: MIT
 #
-# ## ###############################################
+# ## ###########################################################
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 import os
-import sys
 import json
 import mimetypes
 from urllib.parse import urlparse  # Importar urlparse para manejar la URL
@@ -22,17 +20,17 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from control import *
 
-# Nombre o dirección IP del sistema anfitrión del servidor web
+# Dirección IP del servidor web
 address = "192.168.1.1"
-# Puerto en el cual el servidor estará atendiendo solicitudes HTTP
-# El default de un servidor web en produción debe ser 80
+# Puerto para atender solicitudes HTTP
 port = 8080
 
-class WebServer(BaseHTTPRequestHandler):    
+class ServidorWeb(BaseHTTPRequestHandler):    
     def _serve_file(self, rel_path):
-        # Ignorar parámetros en la URL
+        # Ignora parámetros en la URL
         parsed_path = urlparse(rel_path)
-        file_path = parsed_path.path  # Obtener solo la ruta del archivo
+        # Obtuebe solo la ruta del archivo
+        file_path = parsed_path.path  
 
         if not os.path.isfile(file_path):
             self.send_response(404)
@@ -54,6 +52,7 @@ class WebServer(BaseHTTPRequestHandler):
         except Exception as e:
             print(f"Error al servir el archivo {file_path}: {e}")
 
+    # Obtiene la interfaz de usuario: index.html
     def _serve_ui_file(self):
         ui_path = "web/index.html"
         if not os.path.isfile(ui_path):
@@ -80,6 +79,7 @@ class WebServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes(content, "utf-8"))
 
+    # Definición de funciones con las que interactúa el usuario
     def _parse_post(self, json_obj):
         if 'action' not in json_obj:
             return
@@ -93,33 +93,24 @@ class WebServer(BaseHTTPRequestHandler):
             print(f'\tLlamando {func.__name__}({json_obj["value"]})')
             func(json_obj['value'])
 
-    """do_GET controla todas las solicitudes recibidas vía GET, es
-    decir, páginas. Por seguridad, no se analizan variables que lleguen
-    por esta vía"""
+    # Controla las solicitudes GET recibidas por el usuario
     def do_GET(self):
-        # Revisamos si se accede a la raiz.
-        # En ese caso se responde con la interfaz por defecto
         if self.path == '/':
-            # 200 es el código de respuesta satisfactorio (OK)
-            # de una solicitud
-            self.send_response(200)
-            # La cabecera HTTP siempre debe contener el tipo de datos mime
-            # del contenido con el que responde el servidor
+            self.send_response(200) # OK
             self.send_header("Content-type", "text/html")
-            # Fin de cabecera
             self.end_headers()
-            # Por simplicidad, se devuelve como respuesta el contenido del
-            # archivo html con el código de la página de interfaz de usuario
             self._serve_ui_file()
+        # Ell usuario solicita la temperatura
         if self.path == '/get_temperatura':
             data = {
                 "temperatura": obtenerTemperatura()
             }
-            self.send_response(200)
+            self.send_response(200) # OK
             self.send_header("Content-type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
             return
+        # El usuario solicita la humedad
         if self.path == '/get_humedad':
             data = {
                 "humedad": obtenerHumedad()
@@ -129,6 +120,7 @@ class WebServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
             return
+        # El ususario solicita el estado del sistema
         if self.path == '/get_estado':
             data = {
                 "estado": estadoSistema()
@@ -138,6 +130,7 @@ class WebServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
             return
+        # El usuario solicita el estado de irrigación
         if self.path == '/get_estado_irrigacion':
             data = {
                 "estado": estadoIrrigacion()
@@ -150,9 +143,7 @@ class WebServer(BaseHTTPRequestHandler):
         else:
             self._serve_file(self.path[1:])
 
-    """do_POST controla todas las solicitudes recibidas vía POST, es
-    decir, envíos de formulario. Aquí se gestionan los comandos para
-    la Raspberry Pi"""
+    # Controla las solicitudes POST recibidas por el usuario
     def do_POST(self):
         # Obtener la longitud del contenido
         content_length = int(self.headers.get('Content-Length', 0))
@@ -200,14 +191,15 @@ class WebServer(BaseHTTPRequestHandler):
             response = {"error": "Error interno del servidor."}
             self.wfile.write(json.dumps(response).encode("utf-8"))
 
+# Levanta el servidor web y atiende peticiones
 def iniciarServidorWeb():
-    webServer = HTTPServer((address, port), WebServer)
+    servidorWeb = HTTPServer((address, port), ServidorWeb)
     print("Servidor iniciado")
     print(f"\tAtendiendo solicitudes en http://{address}:{port}")
 
     try:
         # Mantiene al servidor web ejecutándose en segundo plano
-        webServer.serve_forever()
+        servidorWeb.serve_forever()
     except KeyboardInterrupt:
         # Maneja la interrupción de cierre CTRL+C
         print("\nInterrupción recibida, deteniendo servidor...")
@@ -215,10 +207,11 @@ def iniciarServidorWeb():
         print(f"Error en el servidor: {e}")
     finally:
         # Detiene el servidor web cerrando todas las conexiones
-        webServer.server_close()
+        servidorWeb.server_close()
         # Reporta parada del servidor web en consola
         print("Servidor detenido.")
 
+# Obtiene la temperatura promedio
 def obtenerTemperatura():
     global control
     try:
@@ -245,15 +238,20 @@ def estadoIrrigacion():
     else:
         return "Apagado"
 
+# Prende o apaga el sistema, depende de la accion
 def modificar_sistema(accion):
     global control
     modificarSistema(control, accion)
 
+# Prende o apaga el sistema de irrigación, depende de la accion
 def modificar_irrigacion(accion):
     global control
     modificarIrrigacion(control, accion)
 
+# Inicia el control del invernadero
 control = iniciarControl()
+
+# Ejecuta el control del invernadero y el servidor web en hilos independientes
 hilo_control = threading.Thread(target=ejecutarControl, args=(control,))
 hilo_servidor = threading.Thread(target=iniciarServidorWeb)
 

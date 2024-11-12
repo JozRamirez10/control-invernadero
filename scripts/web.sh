@@ -1,10 +1,22 @@
 #!/bin/bash
+# ## ###########################################################
+#
+# web.sh
+# Configuración para que la Raspberry Pi funcione
+# como un AP
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
 
+# Archivos de configuración
 ARCHIVO_DHCPD="/etc/dhcpcd.conf"
 ARCHIVO_DNSMASQ="/etc/dnsmasq.conf"
 ARCHIVO_HOSTAPD="/etc/hostapd/hostapd.conf"
 ARCHIVO_DAMEON_HOSTAPD="/etc/default/hostapd"
 
+# Configuraciones
 CONFIG_DHCPD="
 interface wlan0
     static ip_address=192.168.1.1/24
@@ -37,10 +49,12 @@ rsn_pairwise=CCMP
 
 DAEMON_HOSTAPD='DAEMON_CONF="/etc/hostapd/hostapd.conf"'
 
+# Revisa si la interfaz wlan0 esta bloqueada y la desbloquea
 rfkill unblock wlan
 ip link set wlan0 up
 ifconfig wlan0 up
 
+# Detiene los servicios
 systemctl stop dnsmasq
 systemctl stop hostapd
 
@@ -84,6 +98,7 @@ else
     echo "Línea DAEMON_CONF agregada a $ARCHIVO_DAMEON_HOSTAPD."
 fi
 
+# Habilita y levanta el servicio 
 systemctl unmask hostapd
 systemctl enable hostapd
 systemctl start hostapd

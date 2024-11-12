@@ -1,3 +1,13 @@
+# ## ###########################################################
+#
+# foco.py
+# Clase para el control del foco incandescente
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 import pigpio
 import time
 
@@ -11,6 +21,8 @@ class Foco:
     pigpio_conexion = None
 
     def __init__(self, cruce_zero, pwm):
+        
+        # Para que el cruce por cero sea registrado como un evento, se debe usar pigpio
         self.pigpio_conexion = pigpio.pi()
         if not self.pigpio_conexion.connected:
             print("No se pudo conectar con pigpiod")
@@ -23,9 +35,13 @@ class Foco:
         self.pigpio_conexion.set_mode(self.PIN_CRUCE_ZERO, pigpio.INPUT)
         self.pigpio_conexion.set_mode(self.PIN_PWM, pigpio.OUTPUT)
 
+        # Habilita la intensidad del foco en cero
         self.pigpio_conexion.write(self.PIN_PWM, 0)
+
+        # Configura el cruce por cero como un evento
         self.pigpio_conexion.callback(self.PIN_CRUCE_ZERO, pigpio.RISING_EDGE, self.crucePorCero)
 
+    # Ajusta el retardo de fase para el cruce por cero
     def crucePorCero(self, gpio, level, tick):
         if self.intensidad > 0:
             if level == 1:

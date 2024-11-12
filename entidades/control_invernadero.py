@@ -1,5 +1,16 @@
+# ## ###########################################################
+#
+# control_invernadero.py
+# Clase para el control del invernadero
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 import time
-import matplotlib.pyplot as plt
+
+from grafica import graph
 
 class ControlInvernadero:
     
@@ -27,6 +38,7 @@ class ControlInvernadero:
         self.controlador_pid = controlador_pid
         self.prendido = True
 
+    # De acuerdo a la temperatura registrada toma acciones para llegar a la temperatura deseada
     def ajustar_control(self):
         temperatura1 = self.sensor_temperatura1.obtenerTemperatura()
         temperatura2 = self.sensor_temperatura2.obtenerTemperatura()
@@ -41,13 +53,18 @@ class ControlInvernadero:
             temperatura_promedio = 0
 
         print(f"Temperatura: {temperatura_promedio}")
+
+        # Ejecución de controlador PID
         dt = 1
         salida = self.controlador_pid.controlPID(temperatura_promedio, dt)
 
         humedad = self.sensor_humedad.obtenerHumedad()
         print(f"Humedad: {humedad}")
+
+        # Grafica de la temperatura y humedad
         graph(temperatura1, temperatura2, humedad)
 
+        # Acciones tomadas por el valor recibido del controlador PID
         if salida > 0:
             intensidad_foco = min(max(int(salida), 0), 100)
             self.foco.cambiarIntensidad(str(intensidad_foco))
@@ -58,7 +75,7 @@ class ControlInvernadero:
             self.ventilador2.cambiarVelocidad(str(velocidad_ventilador))
             self.foco.apagar()
             print(f"Ajustando el ventilador a {velocidad_ventilador}")
-        
+    
     def prender(self):
         self.prendido = True
 
@@ -71,62 +88,15 @@ class ControlInvernadero:
     def apagarIrrigacion(self):
         self.electrovalvula.apagar()
 
+    # Ejecución infinita del control de invernadero
     def run(self):
         try:
             while True:
-                if(self.prendido):
+                if(self.prendido): # El sistema debe estar encendido
                     self.ajustar_control()
                 time.sleep(1)
         except Exception as e:
             print(f"Error con el control de invernadero: {e}")
         finally:
-            copiar_grafica()
+            pass
 
-
-# Inicializamos las listas globales
-time_graph = []
-temp1_graph = []  # Temperatura 1
-temp2_graph = []  # Temperatura 2
-avg_temp_graph = []  # Temperatura promedio
-humidity_graph = []  # Humedad
-cont_time = 0  # Tiempo global
-
-def graph(temperatura1, temperatura2, humedad):
-    global time_graph, temp1_graph, temp2_graph, avg_temp_graph, humidity_graph, cont_time
-
-    # Obtener el tiempo actual y agregar a las listas
-    cont_time += time.time()
-    time_graph.append(cont_time)
-
-    try:
-        # Calcular temperatura promedio
-        temperatura_promedio = (temperatura1 + temperatura2) / 2
-        avg_temp_graph.append(temperatura_promedio)
-    except Exception as e:
-        print("Error al obtener el promedio de temperatura")
-        temperatura_promedio = 0
-
-    # Agregar las temperaturas individuales y la humedad
-    temp1_graph.append(temperatura1)
-    temp2_graph.append(temperatura2)
-    humidity_graph.append(humedad)
-
-    # Configurar el gráfico
-    plt.plot(time_graph, temp1_graph, label='Temperatura 1', marker='o')
-    plt.plot(time_graph, temp2_graph, label='Temperatura 2', marker='x')
-    plt.plot(time_graph, avg_temp_graph, label='Temperatura Promedio', linestyle='--')
-    plt.plot(time_graph, humidity_graph, label='Humedad', linestyle=':')
-
-    # Configuración de los límites y etiquetas
-    plt.ylim(-20, 70)  # Rango de temperatura
-    plt.title('Gráfica de Temperatura y Humedad')
-    plt.xlabel('Tiempo (s)')
-    plt.ylabel('Valor')
-    plt.grid(True)
-    
-    # Mostrar leyenda
-    plt.legend()
-
-    # Guardar la imagen en un archivo PNG
-    plt.savefig('img/temperatura_grafica.png', format='png')
-    plt.clf()  # Limpiar el gráfico para evitar superposición en futuras iteraciones

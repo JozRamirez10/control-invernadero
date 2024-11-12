@@ -1,3 +1,13 @@
+# ## ###########################################################
+#
+# __init__.py
+# Importación de entidades
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 from .electrovalvula import Electrovalvula
 from .foco import Foco
 from .sensor_humedad import SensorHumedad

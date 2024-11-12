@@ -1,3 +1,13 @@
+# ## ###########################################################
+#
+# .gitignore
+# Archivos cache generados que no deben subirse al repositorio
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 __pycache__
 __pycache__/*
 ./__pycache__

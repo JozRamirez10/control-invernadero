@@ -1,3 +1,13 @@
+# ## ###########################################################
+#
+# ventilador.py
+# Clase para el control del ventilador (5V)
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 import RPi.GPIO as GPIO
 
 class Ventilador:

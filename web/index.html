@@ -1,3 +1,13 @@
+<!--
+#
+# index.html
+# Interfaz de usuario servida en una página web
+#
+# Autor: Marco Rojas
+# License: MIT
+#
+# -->
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -59,50 +69,56 @@
 </html>
 
 <script>
-  // Actualizar imagen de gráfica periódicamente
-   setInterval(function() {
+  // Ejecución de funciones periódicamente
+  setInterval(function() {
+
+    // Actualización de grafica cada segundo
     var img = document.getElementById("tempImg");
     img.src = "./img/temperatura_grafica.png?" + new Date().getTime();
 
+    // Obtiene la temperatura por método GET cada segundo
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/get_temperatura", true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4 && xhr.status === 200) {
         var data = JSON.parse(xhr.responseText);
-        // Actualizar la temperatura en el HTML
+        // Actualización del valor "temperatura"
         document.getElementById("temperatura").innerText = "Temperatura: " + data.temperatura + "°C";
       }
     };
     xhr.send();
 
+    // Obtiene la humedad por método GET cada segundo
     var xhr2 = new XMLHttpRequest();
     xhr2.open("GET", "/get_humedad", true);
     xhr2.onreadystatechange = function() {
       if (xhr2.readyState === 4 && xhr2.status === 200) {
         var data = JSON.parse(xhr2.responseText);
-        // Actualizar la temperatura en el HTML
+        // Actualización del valor "humedad"
         document.getElementById("humedad").innerText = "Humedad: " + data.humedad;
       }
     };
     xhr2.send();
 
+    // Obtiene el estado del sistema por método GET cada segundo
     var xhr3 = new XMLHttpRequest();
     xhr3.open("GET", "/get_estado", true);
     xhr3.onreadystatechange = function() {
       if (xhr3.readyState === 4 && xhr3.status === 200) {
         var data = JSON.parse(xhr3.responseText);
-        // Actualizar la temperatura en el HTML
+        // Actualización del valor "estado" del sistema de invernadero
         document.getElementById("estado").innerText = "Estado: " + data.estado;
       }
     };
     xhr3.send();
 
+    // Obtiene el estado del sistema de irrigación por método GET cada segundo
     var xhr4 = new XMLHttpRequest();
     xhr4.open("GET", "/get_estado_irrigacion", true);
     xhr4.onreadystatechange = function() {
       if (xhr4.readyState === 4 && xhr4.status === 200) {
         var data = JSON.parse(xhr4.responseText);
-        // Actualizar la temperatura en el HTML
+        // Actualización del valor "estado" del sistema de irrigación
         document.getElementById("estado-irrigacion").innerText = "Estado: " + data.estado;
       }
     };
@@ -110,10 +126,12 @@
 
   }, 1000);
 
+  // Construye la petición POST
   function handle(sender, action, value) {
     submit(action, value);
   }
 
+  // Envia solicitudes POST
   function submit(action, value) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", window.location.href, true);

@@ -1,10 +1,20 @@
+# ## ###########################################################
+#
+# control.py
+# Control del invernadero
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 import RPi.GPIO as GPIO
-import threading
-import time
 
 from entidades import *
 from config import *
 
+
+# Configura todas las entidades y las adjunta al Control Invernadero
 def iniciarControl():
     foco = Foco(PIN_CRUCE_CERO_FOCO, PIN_PWM_FOCO)
     electrovalvula = Electrovalvula(PIN_ELECTROVALVULA)
@@ -28,21 +38,23 @@ def iniciarControl():
     )
     return control_invernadero
 
+# Pone en funcionamiento el control de invernadero
 def ejecutarControl(control_invernadero):
     try:
         control_invernadero.run()
     except Exception as e:
         pass
     finally:
-        print("Adios")
         GPIO.cleanup()
 
+# Prende o apaga el sistema
 def modificarSistema(control_invernadero, accion):
     if accion:
         control_invernadero.prender()
     else:
         control_invernadero.apagar()
 
+# Prende o apaga el sistema de irrigación
 def modificarIrrigacion(control_invernadero, accion):
     if accion:
         control_invernadero.prenderIrrigacion()

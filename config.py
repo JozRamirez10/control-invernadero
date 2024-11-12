@@ -1,3 +1,14 @@
+# ## ###########################################################
+#
+# config.py
+# Archivo de configuración de los pines y ids correspondientes al  
+# control de los objetos
+#
+# Autor: José Ramírez
+# License: MIT
+#
+# ## ###########################################################
+
 import board
 
 SETPOINT_TEMPERATURA = 26  
