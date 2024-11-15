@@ -24,42 +24,146 @@
         <hr>
       </div>
 
-      <!-- Control del sistema -->
-      <div class="my-4">
-        <div class="col-12">
-          <h3>Control del sistema</h3>
-          <div>
-            <label id="estado">Estado: </label>
-          </div>
-          <button class="btn btn-success col-4 py-4" type="button" onclick="handle(this, 'modificarSistema', true)">Encender</button>
-          <button class="btn btn-danger col-4 py-4" type="button" onclick="handle(this, 'modificarSistema', false)">Apagar</button>
+      <form>
+        <label>Temperatura objetivo:</label> 
+        <input type="number" value="25" style="width:60px;">
+        <button class="btn btn-primary">Actualizar</button> 
+      </form>
+      <hr>
+
+      <div class="row my-4">
+        <!-- Control del sistema -->
+        <div class="col">
+          
+            <h3>Control del sistema</h3>
+            
+            <div class="d-flex justify-content-center align-items-center my-2">
+              <div class="px-4 py-2 border border-black border-5 rounded">
+                <label  id="estado">Estado: </label>
+              </div>
+            </div>
+            
+            <button class="btn btn-success col-4 py-2" type="button" onclick="handle(this, 'modificarSistema', true)">Encender</button>
+            <button class="btn btn-danger col-4 py-2" type="button" onclick="handle(this, 'modificarSistema', false)">Apagar</button>
+          
         </div>
-      </div>
-      
-      <!-- Control del sistema de irrigación -->
-      <div class="my-4">
-        <div class="col-12">
-          <h3>Control de irrigación</h3>
-          <div>
-            <label id="estado-irrigacion">Estado: </label>
-          </div>
-          <button class="btn btn-success col-4 py-4" type="button" onclick="handle(this, 'modificarIrrigacion', true)">Encender Irrigación</button>
-          <button class="btn btn-danger col-4 py-4" type="button" onclick="handle(this, 'modificarIrrigacion', false)">Apagar Irrigación</button>
+        
+        <!-- Control del sistema de irrigación -->
+        <div class="col">
+          
+            <h3>Control de irrigación</h3>
+            
+            <div class="d-flex justify-content-center align-items-center my-2">
+              <div class="px-4 py-2 border border-black border-5 rounded">
+                <label id="estado-irrigacion">Estado: </label>
+              </div>
+            </div>
+
+            <button class="btn btn-success col-4 py-2" type="button" onclick="handle(this, 'modificarIrrigacion', true)">Encender</button>
+            <button class="btn btn-danger col-4 py-2" type="button" onclick="handle(this, 'modificarIrrigacion', false)">Apagar</button>
+          
         </div>
       </div>
 
-      <!-- Gráfica de histórico de temperatura, irrigación y acciones -->
-      <div class="my-4">
-        <h3>Histórico de Temperatura e Irrigación</h3>
-        <div>
-          <label id="temperatura">Temperatura: </label>
+      <div class="row">
+          <!-- Gráfica de histórico de temperatura, irrigación y acciones -->
+        <div class="my-4 col">
+          <h3>Histórico de Temperatura e Irrigación</h3>
+          <div>
+            <label id="temperatura">Temperatura: </label>
+          </div>
+          <div>
+            <label id="humedad">Humedad: </label>
+          </div>
+          <div id="grafica" class="my-3">
+            <img id="tempImg" src="./img/temperatura_grafica.png" alt="Gráfica de temperatura" style="max-width: 100%;">
+          </div>
         </div>
-        <div>
-          <label id="humedad">Humedad: </label>
+
+        <!-- Control de potencia -->
+        
+        <div class="col">
+
+          <!-- Ventilador 1 -->
+          <div class="my-4">
+            <hr>
+            <h3>Control de Potencia del Ventilador 1</h3>
+            <hr>
+
+            <div class="row my-3">
+              
+              <div class="col d-flex justify-content-center align-items-center my-2">
+                <div class="px-4 py-2 border border-black border-5 rounded">
+                  <label>25%</label>
+                </div>
+              </div>
+              
+              <div class="col d-flex justify-content-center align-items-center my-2">
+                  <input type="button" class="btn btn-primary px-4 py-2" value="Automático" onclick="controlManual('control-ventilador1', this)">
+              </div>
+
+            </div>
+          
+            <div class="my2 d-none">
+              <input type="range" class="form-range col-8" min="0" max="100" step="1" id="control-ventilador1">
+            </div>
+          
+          </div>
+          
+          <!-- Ventilador 2 -->
+          <div class="my-4">
+            <hr>
+            <h3>Control de Potencia del Ventilador 2</h3>
+            <hr>
+
+            <div class="row my-3">
+              
+              <div class="col d-flex justify-content-center align-items-center my-2">
+                <div class="px-4 py-2 border border-black border-5 rounded">
+                  <label>25%</label>
+                </div>
+              </div>
+              
+              <div class="col d-flex justify-content-center align-items-center my-2">
+                  <input type="button" class="btn btn-primary px-4 py-2" value="Automático" onclick="controlManual('control-ventilador2', this)">
+              </div>
+
+            </div>
+          
+            <div class="my2 d-none">
+              <input type="range" class="form-range col-8" min="0" max="100" step="1" id="control-ventilador2">
+            </div>
+          
+          </div>
+
+          <!-- Foco -->
+          <div class="my-4">
+            <hr>
+            <h3>Control de Potencia del Foco</h3>
+            <hr>
+
+            <div class="row my-3">
+              
+              <div class="col d-flex justify-content-center align-items-center my-2">
+                <div class="px-4 py-2 border border-black border-5 rounded">
+                  <label>25ºC</label>
+                </div>
+              </div>
+              
+              <div class="col d-flex justify-content-center align-items-center my-2">
+                  <input type="button" class="btn btn-primary px-4 py-2" value="Automático" onclick="controlManual('control-foco', this)">
+              </div>
+
+            </div>
+          
+            <div class="my2 d-none">
+              <input type="range" class="form-range col-8" min="0" max="100" step="1" id="control-foco">
+            </div>
+          
+          </div>
+        
         </div>
-        <div id="grafica" class="my-3">
-          <img id="tempImg" src="./img/temperatura_grafica.png" alt="Gráfica de temperatura" style="max-width: 100%;">
-        </div>
+
       </div>
 
       <script src="./web/src/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -69,6 +173,20 @@
 </html>
 
 <script>
+
+  function controlManual(id, boton){
+    const div = document.getElementById(id).parentElement;
+    if(div.classList.contains("d-none")){
+      div.classList.remove("d-none")
+      boton.value = "Manual"
+    }else{
+      div.classList.add("d-none")
+      boton.value = "Automático"
+    }
+
+
+  }
+
   // Ejecución de funciones periódicamente
   setInterval(function() {
 
