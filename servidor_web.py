@@ -254,10 +254,10 @@ def modificar_irrigacion(accion):
 control = iniciarControl()
 
 # Ejecuta el control del invernadero y el servidor web en hilos independientes
-hilo_control = threading.Thread(target=ejecutarControl, args=(control,))
+#hilo_control = threading.Thread(target=ejecutarControl, args=(control,))
 hilo_servidor = threading.Thread(target=iniciarServidorWeb)
 
-hilo_control.start()
+#hilo_control.start()
 hilo_servidor.start()
 
 
