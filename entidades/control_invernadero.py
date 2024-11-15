@@ -10,7 +10,7 @@
 
 import time
 
-from grafica import graph
+from .grafica import graph
 
 class ControlInvernadero:
     
