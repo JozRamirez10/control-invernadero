@@ -25,27 +25,30 @@ También ofrece el control de encendido/apagado tanto del invernadero como del s
 
 ![Captura de pantalla 2024-11-23 a la(s) 23 12 51](https://github.com/user-attachments/assets/93fcd5e8-19af-47ec-b70f-8a7c8a81738c)
 
-
 ## Ejecución
 
 Da permisos de ejecución al script 'start.sh'
-'''
+```
 chmod +x start.sh
-'''
+```
 
 Ejecuta con privilegios de root el script 'start.sh'
-'''
+```
 sudo ./start.sh
-'''
+```
 
 La primera vez que se ejecute el script va a instalar todas los paquetes y dependencias, además de configurar los archivos correspondientes para su ejecución.
 Cuando terminé de configurar, el sistema se va a reiniciar y cuando terminé de iniciarse habrá creado su propia red "Sistema-Invernadero".
 Para acceder a la aplicación web, la dirección es: 192.168.1.1:8080
 
 Para comprobar que el sistema funciona correctamente:
-'''
+```
 sudo systemctl status invernadero.service
-'''
+```
+
+## Video demostrativo
+
+Puedes acceder al siguiente video en [YouTube](https://youtu.be/Qtefp4gEyoY)
 
 ---
 
