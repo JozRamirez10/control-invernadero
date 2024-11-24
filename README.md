@@ -55,7 +55,7 @@ Puedes acceder al siguiente video en [YouTube](https://youtu.be/Qtefp4gEyoY)
 ## Autores
 
 - Jose Miguel Ramírez González
-- Rojas Garcia Marco Daniel
+- Marco Daniel Rojas Garcia 
 
 ## Licencia
 
