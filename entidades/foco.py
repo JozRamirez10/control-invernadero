@@ -20,6 +20,8 @@ class Foco:
 
     pigpio_conexion = None
 
+    control = None # False - Automático, True - Manual
+
     def __init__(self, cruce_zero, pwm):
         
         # Para que el cruce por cero sea registrado como un evento, se debe usar pigpio
@@ -27,6 +29,8 @@ class Foco:
         if not self.pigpio_conexion.connected:
             print("No se pudo conectar con pigpiod")
             return
+    
+        self.control = False
         
         self.PIN_CRUCE_ZERO = cruce_zero
         self.PIN_PWM = pwm
@@ -60,12 +64,17 @@ class Foco:
         self.intensidad = 0
     
     def cambiarIntensidad(self, intensidad):
-        if intensidad.isdigit():
-            intensidad = int(intensidad)
-            if 0 <= intensidad <= 100:
-                self.intensidad = intensidad
-            else:
-                print("Foco: Error al leer valor entre 0 y 100")
+        if 0 <= intensidad <= 100:
+            self.intensidad = intensidad
         else:
-            print("Foco: Error al cambiar la intensidad")
+            print("Foco: Error al leer valor entre 0 y 100")
+    
+    def getPotencia(self):
+        return self.intensidad
+
+    def setControl(self, valor):
+        self.control = valor
+    
+    def getControl(self):
+        return self.control
 

@@ -16,6 +16,7 @@ import os
 import json
 import mimetypes
 import threading
+from datetime import datetime
 
 from urllib.parse import urlparse  # Importar urlparse para manejar la URL
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -56,7 +57,7 @@ class ServidorWeb(BaseHTTPRequestHandler):
 
     # Obtiene la interfaz de usuario: index.html
     def _serve_ui_file(self):
-        ui_path = "web/index.html"
+        ui_path = "./web/index.html"
         if not os.path.isfile(ui_path):
             err = "index.html no encontrado."
             self.send_response(404)
@@ -88,12 +89,44 @@ class ServidorWeb(BaseHTTPRequestHandler):
         switcher = {
             'modificarSistema': modificar_sistema,
             'modificarIrrigacion' : modificar_irrigacion,
+            'valorObjetivo' : valor_objetivo,
+            'modificarControlVentilador1' : modificar_control_ventilador1,
+            'modificarControlVentilador2' : modificar_control_ventilador2,
+            'modificarVentilador1': modificar_ventilador1,
+            'modificarVentilador2': modificar_ventilador2,
+            'modificarControlFoco' : modificar_control_foco,
+            'modificarFoco' : modificar_foco,
+            'almacenarGrafica' : almacenar_grafica
         }
         print(json_obj)
         func = switcher.get(json_obj['action'], None)
         if func:
             print(f'\tLlamando {func.__name__}({json_obj["value"]})')
             func(json_obj['value'])
+
+    def _get_image_list(self):
+        # Obtiene la lista de imágenes en la carpeta "img"
+        images = []
+        try:
+            for filename in os.listdir("img/"):
+                if filename.startswith("grafica_") and filename.endswith(".png"):
+                    # Parsear el nombre del archivo
+                    date_str = filename[8:16]  # Fecha (YYYYMMDD)
+                    time_str = filename[17:23]  # Hora (HHMMSS)
+                    timestamp = f"{date_str} {time_str}"
+
+                    # Convertir la fecha y hora en un formato legible
+                    dt = datetime.strptime(timestamp, "%Y%m%d %H%M%S")
+                    readable_time = dt.strftime("%d %b %Y, %H:%M:%S")
+
+                    images.append({
+                        "filename": filename,
+                        "readable_time": readable_time,
+                        "url": f"/img/{filename}"
+                    })
+        except Exception as e:
+            print(f"Error al obtener imágenes: {e}")
+        return images
 
     # Controla las solicitudes GET recibidas por el usuario
     def do_GET(self):
@@ -102,6 +135,15 @@ class ServidorWeb(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
             self._serve_ui_file()
+        if self.path == '/get_images':
+            # Obtener la lista de imágenes
+            images = self._get_image_list()
+            # Enviar la lista como JSON
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(images).encode("utf-8"))
+            return
         # Ell usuario solicita la temperatura
         if self.path == '/get_temperatura':
             data = {
@@ -136,6 +178,43 @@ class ServidorWeb(BaseHTTPRequestHandler):
         if self.path == '/get_estado_irrigacion':
             data = {
                 "estado": estadoIrrigacion()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        # El usuario solicita el valor de temperatura objetivo
+        if self.path == '/get_setpoint':
+            data = {
+                "setpoint": obtenerSetpoint()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        if self.path == '/get_ventilador1':
+            data = {
+                "ventilador1": obtenerPotenciaVentilador1()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        if self.path == '/get_ventilador2':
+            data = {
+                "ventilador2": obtenerPotenciaVentilador2()
+            }
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+        if self.path == '/get_foco':
+            data = {
+                "foco": obtenerPotenciaFoco()
             }
             self.send_response(200)
             self.send_header("Content-type", "application/json")
@@ -217,7 +296,7 @@ def iniciarServidorWeb():
 def obtenerTemperatura():
     global control
     try:
-        temperatura = (control.sensor_temperatura1.obtenerTemperatura() + control.sensor_temperatura2.obtenerTemperatura()) / 2
+        temperatura = control.getTemperatura()
     except Exception:
         return "Error"
     return temperatura
@@ -240,6 +319,22 @@ def estadoIrrigacion():
     else:
         return "Apagado"
 
+def obtenerSetpoint():
+    global control
+    return control.controlador_pid.getSetpoint()
+
+def obtenerPotenciaVentilador1():
+    global control
+    return control.ventilador1.getPotencia()
+
+def obtenerPotenciaVentilador2():
+    global control
+    return control.ventilador2.getPotencia()
+
+def obtenerPotenciaFoco():
+    global control
+    return control.foco.getPotencia()
+
 # Prende o apaga el sistema, depende de la accion
 def modificar_sistema(accion):
     global control
@@ -250,14 +345,52 @@ def modificar_irrigacion(accion):
     global control
     modificarIrrigacion(control, accion)
 
+def valor_objetivo(valor):
+    global control
+    valor = int(valor)
+    modificarTemperaturaObjetivo(control, valor)
+
+def modificar_control_ventilador1(valor):
+    global control
+    modificarControlVentilador1(control, valor)
+
+def modificar_control_ventilador2(valor):
+    global control
+    modificarControlVentilador2(control, valor)
+
+def modificar_ventilador1(valor):
+    global control
+    valor = int(valor)
+    modificarVentilador1(control, valor)
+
+def modificar_ventilador2(valor):
+    global control
+    valor = int(valor)
+    modificarVentilador2(control, valor)
+
+def modificar_control_foco(valor):
+    global control
+    modificarControlFoco(control, valor)
+
+def modificar_foco(valor):
+    global control
+    valor = int(valor)
+    modificarFoco(control, valor)
+
+def almacenar_grafica(valor = None):
+    global control
+    print("Almacenando grafica")
+    almacenarGrafica(control)
+
+
 # Inicia el control del invernadero
 control = iniciarControl()
 
 # Ejecuta el control del invernadero y el servidor web en hilos independientes
-#hilo_control = threading.Thread(target=ejecutarControl, args=(control,))
+hilo_control = threading.Thread(target=ejecutarControl, args=(control,))
 hilo_servidor = threading.Thread(target=iniciarServidorWeb)
 
-#hilo_control.start()
+hilo_control.start()
 hilo_servidor.start()
 
 

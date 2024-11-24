@@ -24,7 +24,7 @@ def iniciarControl():
     sensor_temperatura1 = SensorTemperatura(ID_SENSOR_TEMPERATURA1)
     sensor_temperatura2 = SensorTemperatura(ID_SENSOR_TEMPERATURA2)
 
-    controlador_pid = ControladorPID(kp=2.2, ki=0.7, kd=0.2, setpoint=SETPOINT_TEMPERATURA)
+    controlador_pid = ControladorPID(kp=15, ki=5, kd=10, setpoint=SETPOINT_TEMPERATURA)
 
     control_invernadero = ControlInvernadero(
         foco, 
@@ -61,6 +61,29 @@ def modificarIrrigacion(control_invernadero, accion):
     else:
         control_invernadero.apagarIrrigacion()
 
+def modificarTemperaturaObjetivo(control_invernadero, valor):
+    control_invernadero.modificarTemperaturaObjetivo(valor)
+
+def modificarVentilador1(control_invernadero, valor):
+    control_invernadero.modificarVentilador1(valor)
+
+def modificarVentilador2(control_invernadero, valor):
+    control_invernadero.modificarVentilador2(valor)
+
+def modificarControlVentilador1(control_invernadero, valor):
+    control_invernadero.modificarControlVentilador1(valor)
+
+def modificarControlVentilador2(control_invernadero, valor):
+    control_invernadero.modificarControlVentilador2(valor)
+
+def modificarControlFoco(control_invernadero, valor):
+    control_invernadero.modificarControlFoco(valor)
+
+def modificarFoco(control_invernadero, valor):
+    control_invernadero.modificarFoco(valor)
+
+def almacenarGrafica(control_invernadero):
+    control_invernadero.almacenarGrafica()
 
 
  

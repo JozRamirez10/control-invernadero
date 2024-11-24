@@ -10,6 +10,9 @@
 
 import matplotlib.pyplot as plt
 import time
+import shutil
+from datetime import datetime
+import pytz
 
 # Almacenamiento de los valores que usa la gráfica
 time_graph = []
@@ -27,13 +30,20 @@ def graph(temperatura1, temperatura2, humedad):
     cont_time += time.time()
     time_graph.append(cont_time)
 
-    try:
-        # Calcula la temperatura promedio
-        temperatura_promedio = (temperatura1 + temperatura2) / 2
-        avg_temp_graph.append(temperatura_promedio)
-    except Exception as e:
+    if temperatura1 is None and temperatura2 is None:
         print("Error al obtener el promedio de temperatura")
         temperatura_promedio = 0
+    elif temperatura1 is None:
+        temperatura_promedio = temperatura2
+    elif temperatura2 is None:
+        temperatura_promedio = temperatura1
+    else:
+        try:
+            temperatura_promedio = (temperatura1 + temperatura2) / 2
+        except Exception as e:
+            temperatura_promedio = 0
+
+    avg_temp_graph.append(temperatura_promedio)
 
     # Agrega las temperaturas individuales y la humedad
     temp1_graph.append(temperatura1)
@@ -59,3 +69,19 @@ def graph(temperatura1, temperatura2, humedad):
     # Guardar la imagen en un archivo PNG
     plt.savefig('img/temperatura_grafica.png', format='png')
     plt.clf()  # Limpiar el gráfico 
+
+# Realiza una copia de la gráfica mostrada en la página
+def copiar_grafica():
+    imagen_original = "img/temperatura_grafica.png"
+    
+    # Configurar la zona horaria de México
+    timezone = pytz.timezone('America/Mexico_City')
+    timestamp = datetime.now(timezone).strftime("%Y%m%d_%H%M%S")
+    nombre_copia = f"img/grafica_{timestamp}.png"
+    
+    # Copiar la imagen
+    try:
+        shutil.copy(imagen_original, nombre_copia)
+        print(f"Copia creada: {nombre_copia}")
+    except Exception as e:
+        print(f"Error al copiar la imagen: {e}")

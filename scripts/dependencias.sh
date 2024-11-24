@@ -21,6 +21,7 @@ apt install -y python3-matplotlib
 # Instalación por pip3
 pip3 install adafruit-circuitpython-dht Adafruit-Blinka
 pip3 install -U python-magic
+pip3 install pytz
 
 # Habilitación de servicios
 systemctl enable pigpiod
