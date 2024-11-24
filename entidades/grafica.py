@@ -70,7 +70,7 @@ def graph(temperatura1, temperatura2, humedad):
     plt.savefig('img/temperatura_grafica.png', format='png')
     plt.clf()  # Limpiar el gráfico 
 
-# Realiza una copia de la gráfica mostrada en la página
+# Realiza una copia de la gráfica generada en tiempo real
 def copiar_grafica():
     imagen_original = "img/temperatura_grafica.png"
     
@@ -79,7 +79,7 @@ def copiar_grafica():
     timestamp = datetime.now(timezone).strftime("%Y%m%d_%H%M%S")
     nombre_copia = f"img/grafica_{timestamp}.png"
     
-    # Copiar la imagen
+    # Copia la imagen
     try:
         shutil.copy(imagen_original, nombre_copia)
         print(f"Copia creada: {nombre_copia}")

@@ -36,6 +36,7 @@ class ControladorPID:
         salida = propocional + integral + derivativa
         return salida
     
+    # Actualiza el setpoint
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
         modificarTemperaturaArchivoConfig(setpoint)

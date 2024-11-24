@@ -32,7 +32,7 @@ class ServidorWeb(BaseHTTPRequestHandler):
     def _serve_file(self, rel_path):
         # Ignora parámetros en la URL
         parsed_path = urlparse(rel_path)
-        # Obtuebe solo la ruta del archivo
+        # Obtiene solo la ruta del archivo
         file_path = parsed_path.path  
 
         if not os.path.isfile(file_path):
@@ -194,6 +194,7 @@ class ServidorWeb(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
             return
+        # El usuario solicita el valor del ventilador
         if self.path == '/get_ventilador1':
             data = {
                 "ventilador1": obtenerPotenciaVentilador1()
@@ -203,6 +204,7 @@ class ServidorWeb(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
             return
+        # El usuario solicita el valor del ventilador 2
         if self.path == '/get_ventilador2':
             data = {
                 "ventilador2": obtenerPotenciaVentilador2()
@@ -212,6 +214,7 @@ class ServidorWeb(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
             return
+        # El usuario solicita el valor del foco
         if self.path == '/get_foco':
             data = {
                 "foco": obtenerPotenciaFoco()

@@ -75,6 +75,7 @@ class ControlInvernadero:
         if salida > 0:
             intensidad_foco = min(max(int(salida), 0), 100)
             
+            # Comprueba si el foco tiene control manual o automático
             if(self.foco.getControl() == False):
                 self.foco.cambiarIntensidad(intensidad_foco)
             
