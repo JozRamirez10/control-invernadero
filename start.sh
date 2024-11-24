@@ -23,8 +23,6 @@ if [ ! -f "$FLAG_FILE" ]; then
   bash ./scripts/w1.sh
   bash ./scripts/web.sh
   bash ./scripts/configurar_servicio.sh
-  
-  mkdir img
 
   # Crea el archivo de bandera
   touch "$FLAG_FILE"
