@@ -37,7 +37,7 @@ Ejecuta con privilegios de root el script 'start.sh'
 sudo ./start.sh
 ```
 
-La primera vez que se ejecute el script va a instalar todas los paquetes y dependencias, además de configurar los archivos correspondientes para su ejecución.
+La primera vez que se ejecute el script va a instalar todos los paquetes y dependencias, además de configurar los archivos correspondientes para su ejecución.
 Cuando terminé de configurar, el sistema se va a reiniciar y cuando terminé de iniciarse habrá creado su propia red "Sistema-Invernadero".
 Para acceder a la aplicación web, la dirección es: 192.168.1.1:8080
 
@@ -55,7 +55,16 @@ Puedes acceder al siguiente video en [YouTube](https://youtu.be/Qtefp4gEyoY)
 ## Autores
 
 - Jose Miguel Ramírez González
-- Marco Daniel Rojas Garcia 
+- Marco Daniel Rojas Garcia
+
+## Enlace a repositorio en GitHub
+
+https://github.com/JozRamirez10/control-invernadero.git
+
+Para descargar el repositorio a través de una terminal o dentro de la Raspberry ejecute el siguiente comando:
+```
+git clone https://github.com/JozRamirez10/control-invernadero.git
+```
 
 ## Licencia
 
